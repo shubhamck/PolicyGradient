@@ -12,11 +12,37 @@ class Actor:
 		self.dim_state = dim_state
 		self.dim_action = dim_action
 
+		n_hidden_1 = 6
+
 	#Creates Neural Network
 	def createModel():
+
+		# Weights
+		weights = {
+    	'h1': tf.Variable(tf.random_normal([self.dim_state, n_hidden_1])),
+    	
+    	'out': tf.Variable(tf.random_normal([n_hidden_1, self.dim_action]))
+		}
+
+		# Biases
+		biases = {
+    	'b1': tf.Variable(tf.random_normal([n_hidden_1])),
+    	'out': tf.Variable(tf.random_normal([self.dim_action]))
+		}
+
+		#Input Layer
 		x = tf.placeholder(tf.float32, [None, self.dim_state])
-		
-		pass
+
+		# Hidden Layer
+		layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+    	layer_1 = tf.nn.relu(layer_1)
+
+    	# Output Layer
+    	out_layer = tf.matmul(layer_1, weights['out']) + biases['out']
+
+    	return out_layer
+
+
 
 	#Get action for a given state
 	def act(state):
