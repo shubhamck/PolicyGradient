@@ -90,10 +90,10 @@ class Actor:
 		"""
 		Trains neural network. Update parameters
 		"""
-		#transitions = [state, action, r, R, advantage]
+		#transitions = [state, action, advantage]
 		state = transitions[:][0]
 		actions = transitions[:][1]
-		advantage = transitions[:][4]
+		advantage = transitions[:][2]
 		_,c = self.sess.run([self.optimizer, self.loss], feed_dict={
             	self.x: state,
 		self.actions: actions,
@@ -114,7 +114,7 @@ if __name__=="__main__":
 	action = np.array([[1,0]])
 	advantages = np.array([[1]])
 	print advantages
-	transitions = np.array([s,action,1,2,advantages])
+	transitions = np.array([s,action,advantages])
 	c = actor.train(transitions)
 	print c
 

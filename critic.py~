@@ -43,7 +43,7 @@ class Critic:
 	def train(self,state, Reward):
 		#train critic neural network
 		samples=np.shape(state)[1]
-		display_step=1;
+		display_step=1
 		training_epochs=100
 		for epoch in range(training_epochs):
 			avg_cost=0
