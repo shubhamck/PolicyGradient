@@ -1,0 +1,20 @@
+import Actor
+import Critic
+
+import tensorflow as tf
+import numpy as np
+import gym
+
+#Main Policy Gradient Implementation
+
+NUM_ROLLOUTS = 1
+NUM_EPOCHS = 300
+
+env = gym.make("CartPole-v0")
+
+for i in range(NUM_EPOCHS):
+	observation = env.reset()
+
+	#For each policy
+	
+	
