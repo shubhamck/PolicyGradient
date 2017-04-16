@@ -49,10 +49,10 @@ class Critic:
 			avg_cost=0
 			_, c = self.sess.run([self.optimizer, self.cost], feed_dict={self.x: state,self.T: Reward})
             		avg_cost = avg_cost + c/samples
-            		if epoch % display_step == 0:
-                		print("Epoch:", '%04d' % (epoch+1), "cost=", \
-                    			"{:.9f}".format(avg_cost))
-        	print("Optimization Finished!")
+            		#if epoch % display_step == 0:
+                		#print("Epoch:", '%04d' % (epoch+1), "cost=", \
+                    		#	"{:.9f}".format(avg_cost))
+        	#print("Optimization Finished!")
 
 if __name__=="__main__":
 	critic=Critic(4)

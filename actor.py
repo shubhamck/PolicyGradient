@@ -57,7 +57,7 @@ class Actor:
 
 		self.loss = -tf.reduce_sum(eligibility)
 
-		self.optimizer = tf.train.AdamOptimizer(0.01).minimize(self.loss)
+		self.optimizer = tf.train.AdamOptimizer(0.1).minimize(self.loss)
 
 
 		#Initialize Variables
@@ -86,18 +86,14 @@ class Actor:
 		pass
 
 	#Train to update weights
-	def train(self,transtions):
+	def train(self,states,actions,advantages):
 		"""
 		Trains neural network. Update parameters
 		"""
-		#transitions = [state, action, advantage]
-		state = transitions[:][0]
-		actions = transitions[:][1]
-		advantage = transitions[:][2]
 		_,c = self.sess.run([self.optimizer, self.loss], feed_dict={
-            	self.x: state,
+            	self.x: states,
 		self.actions: actions,
-		self.advantages: advantage
+		self.advantages: advantages
         	})
 		return c
 
