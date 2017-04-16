@@ -4,6 +4,7 @@ import gym
 #import matplotlib.pyplot as plt #for visualization
 import critic
 import actor
+import random
 
 import numpy as np
 NUM_EPOCHS = 1000
@@ -15,7 +16,7 @@ no_of_actions=2 #find depeding on which environment it is
 np.random.seed(1)
 
 if __name__=="__main__":
-	epsilon =0.5
+	epsilon =0.9
 	#initialize gym environment
 	env = gym.make("CartPole-v0")
 	observation = env.reset()
@@ -39,7 +40,8 @@ if __name__=="__main__":
 			env.render()
 			observation_old = np.reshape(observation_old,(1,4))
 			action_prob = actor.act(observation_old)
-			toss=np.random.rand(1,1)
+			#toss=np.random.rand(1,1)
+			toss = random.random()
 			if (epsilon < toss):			
 				action = np.argmax(action_prob)
 			else:	
@@ -54,16 +56,22 @@ if __name__=="__main__":
 				break
 		print "Episode:",i,"epsilon:",epsilon,"Total Reward : ",tot_reward		
 		#print T
+
 		# Get Rt then T will become <s,a,r,R>
-		T[len(T)-1].append(T[len(T)-1][2])		
-		for i in range(len(T)-2, -1, -1):
-			T[i].append(T[i][2]+GAMMA*T[i+1][3])
+		#T[len(T)-1].append(T[len(T)-1][2])		
+		for i in range(len(T)-1):
+			#T[i].append(T[i][2]+GAMMA*T[i+1][3])
+			T[i].append(T[i][2]+GAMMA*critic.Value(T[i+1][0]))
+		T[len(T)-1].append(T[len(T)-1][2]) 
+
 		# find bt which is a value from critic, then T becomes <s,a,r,R,b>
 		for i in range(len(T)):
 			T[i].append(critic.Value(T[i][0]))
+
 		#find A which is Advantage (R-b), then T becomes <s,a,r,R,b,A>
 		for i in range(len(T)):
 			T[i].append(T[i][-2]-T[i][-1])
+
 		#train critic using states and R (actual values from environment)
 		states=T[0][0]	
 		for i in range(1,len(T)):		
@@ -74,6 +82,7 @@ if __name__=="__main__":
 		#print "states shape:",np.shape(states)
 		#print "values shape:",np.shape(values)
 		critic.train(states,values)
+
 		#train actor using states actions and advantage (for computing gradients too)
 		advantages=T[0][5]	
 		for i in range(1,len(T)):		
