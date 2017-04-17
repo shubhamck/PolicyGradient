@@ -19,18 +19,18 @@ class Actor:
 	#Creates Neural Network
 	def createModel(self):
 
-		n_hidden_1 = 6
+		n_hidden_1 = 10
 		# Weights
 		weights = {
-    		'h1': tf.Variable(tf.random_normal([self.dim_state, n_hidden_1])),
+    		'h1': tf.Variable(tf.random_normal([self.dim_state, self.dim_action])),
     	
-    		'out': tf.Variable(tf.random_normal([n_hidden_1, self.dim_action]))
+    		#'out': tf.Variable(tf.random_normal([n_hidden_1, self.dim_action]))
 		}
 
 		# Biases
 		biases = {
-    		'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    		'out': tf.Variable(tf.random_normal([self.dim_action]))
+    		'b1': tf.Variable(tf.random_normal([self.dim_action])),
+    		#'out': tf.Variable(tf.random_normal([self.dim_action]))
 		}
 
 		#Input Layer
@@ -38,11 +38,11 @@ class Actor:
 
 		# Hidden Layer
 		layer_1 = tf.add(tf.matmul(self.x, weights['h1']), biases['b1'])
-    		layer_1 = tf.nn.relu(layer_1)
+    		#layer_1 = tf.nn.sigmoid(layer_1)
 
     		# Output Layer
-    		self.out_layer = tf.nn.softmax(tf.matmul(layer_1, weights['out']) + biases['out'])
-    		self.out_layer
+    		#self.out_layer = tf.nn.softmax(tf.matmul(layer_1, weights['out']) + biases['out'])
+    		self.out_layer = tf.nn.softmax(layer_1)
 
 		#Good Probabilities
 		self.actions = tf.placeholder(tf.float32, [None, self.dim_action])
@@ -57,7 +57,7 @@ class Actor:
 
 		self.loss = -tf.reduce_sum(eligibility)
 
-		self.optimizer = tf.train.AdamOptimizer(0.1).minimize(self.loss)
+		self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.loss)
 
 
 		#Initialize Variables
@@ -90,11 +90,13 @@ class Actor:
 		"""
 		Trains neural network. Update parameters
 		"""
-		_,c = self.sess.run([self.optimizer, self.loss], feed_dict={
-            	self.x: states,
-		self.actions: actions,
-		self.advantages: advantages
-        	})
+		epochs = 100
+		for _ in range(epochs):
+			_,c = self.sess.run([self.optimizer, self.loss], feed_dict={
+		    	self.x: states,
+			self.actions: actions,
+			self.advantages: advantages
+			})
 		return c
 
 		

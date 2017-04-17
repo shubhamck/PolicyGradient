@@ -7,7 +7,7 @@ import actor
 import random
 
 import numpy as np
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 3000
 GAMMA = 0.99
 
 no_of_actions=2 #find depeding on which environment it is
@@ -16,7 +16,7 @@ no_of_actions=2 #find depeding on which environment it is
 np.random.seed(1)
 
 if __name__=="__main__":
-	epsilon =0.9
+	epsilon =0.6
 	#initialize gym environment
 	env = gym.make("CartPole-v0")
 	observation = env.reset()
@@ -31,22 +31,29 @@ if __name__=="__main__":
 	#for n policies 		
 	for i in range(NUM_EPOCHS):
 		#epsilon=epsilon-0.4*(float(i)/NUM_EPOCHS)
-		epsilon=epsilon-0.001
+		if epsilon > 0.1:
+			epsilon=epsilon-0.001
 		#for each rollout <s,a,r>
 		observation_old = env.reset()
 		T=[]
 		tot_reward = 0
 		for _ in range(400):
-			env.render()
+			#env.render()
 			observation_old = np.reshape(observation_old,(1,4))
 			action_prob = actor.act(observation_old)
+			
 			#toss=np.random.rand(1,1)
-			toss = random.random()
-			if (epsilon < toss):			
-				action = np.argmax(action_prob)
-			else:	
-				action = np.random.randint(2, size=1) #rand integer
-				action = action.item(0)		
+			#toss = random.random()
+			#if (epsilon < toss):			
+			#	action = np.argmax(action_prob)
+			#else:	
+			#	action = np.random.randint(2, size=1) #rand integer
+			#	action = action.item(0)		
+			if np.random.uniform() < action_prob[0][0]:
+				action = 0
+			else:
+				action = 1
+			print "action prob: ",action_prob,"Action taken: ",action
 			observation_new, reward, done, info = env.step(action)
 			observation_new = np.reshape(observation_new,(1,4))
 			T.append([observation_old,action,reward])
@@ -61,6 +68,7 @@ if __name__=="__main__":
 		#T[len(T)-1].append(T[len(T)-1][2])		
 		for i in range(len(T)-1):
 			#T[i].append(T[i][2]+GAMMA*T[i+1][3])
+			#TD Update : R(s) = r + gamma*V(s+1)
 			T[i].append(T[i][2] + GAMMA*critic.Value(T[i+1][0]))
 		T[len(T)-1].append(T[len(T)-1][2]) 
 

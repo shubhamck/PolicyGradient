@@ -8,28 +8,36 @@ class Critic:
 		self.sess=tf.Session()
 		self.dim_state=dim_state
 		self.dim_value=1
-		self.learning_rate=0.01
+		self.learning_rate=0.001
 	def createModel(self):
+
 		#declaring no of neurons for each layer
 		n_hidden_1=10;
+
 		#weights for each layer
 		weights={
 			'h1':tf.Variable(tf.random_normal([self.dim_state, n_hidden_1])),
 			'out':tf.Variable(tf.random_normal([n_hidden_1,self.dim_value]))
 		}
+
 		#biases for each layer
 		biases={
 			'b1':tf.Variable(tf.random_normal([n_hidden_1])),
 			'out':tf.Variable(tf.random_normal([self.dim_value]))
 		}
+
 		#Input  layer
 		self.x=tf.placeholder(tf.float32,[None,self.dim_state])
+
 		#hidden layer 1
 		self.layer1=tf.add(tf.matmul(self.x,weights['h1']),biases['b1'])
 		self.layer1=tf.nn.relu(self.layer1)
+
 		#Output layer
 		self.y=tf.matmul(self.layer1,weights['out'])+biases['out']
+		#self.y = tf.nn.relu(self.y)
 		self.T=tf.placeholder(tf.float32,[None,1])
+
 		#loss function
 		self.cost=tf.nn.l2_loss(self.y-self.T)
 #		self.optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
@@ -40,6 +48,7 @@ class Critic:
 	def Value(self,state):
 		#get the value for a state="
 		return self.sess.run(self.y,feed_dict={self.x:state})
+
 	def train(self,state, Reward):
 		#train critic neural network
 		samples=np.shape(state)[1]
