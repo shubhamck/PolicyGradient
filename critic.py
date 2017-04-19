@@ -13,6 +13,7 @@ class Critic:
 
 		#declaring no of neurons for each layer
 		n_hidden_1=10;
+		tf.set_random_seed(1234)
 
 		#weights for each layer
 		weights={

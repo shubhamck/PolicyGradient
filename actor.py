@@ -20,6 +20,7 @@ class Actor:
 	def createModel(self):
 
 		n_hidden_1 = 10
+		tf.set_random_seed(1234)
 		# Weights
 		weights = {
     		'h1': tf.Variable(tf.random_normal([self.dim_state, self.dim_action])),
@@ -51,7 +52,7 @@ class Actor:
 
 		good_probabilities = tf.reduce_sum(tf.mul(self.out_layer, self.actions),reduction_indices=[1])
 
-		log_probabilities = tf.log(good_probabilities)
+		log_probabilities = tf.log(tf.clip_by_value(good_probabilities, 1e-10, 1.0))
 
 		eligibility = log_probabilities * self.advantages
 
